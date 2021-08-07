@@ -12,4 +12,5 @@ Dependencies:
 git clone https://github.com/zhangrengang/degeneracy
 cd degeneracy
 python2 get_degeneracy.py test/test.gff3 test/test.fa
+python2 get_degeneracy.py test/test.gff3 test/test.fa out_prefix
 ```
