@@ -1,4 +1,4 @@
-Get 0-fold and 4-fold degeneracy sites from Genome sequences (`*.fasta`) and Gene annotations (standard `*.gff3`).
+Get 0-fold and 4-fold degenerate sites from Genome sequences (`*.fasta`) and Gene annotations (standard `*.gff3`).
 ### Installation ###
 Dependencies:
 + [python 2.7](https://www.python.org/)

@@ -521,6 +521,7 @@ class GffExons(object):
 	def strand(self):
 		return self.coord[3]
 	def extract_seq(self, d_seqs, type='exon'):
+		'''exons must be in order'''
 		seqs = []
 		for line in self:	# exon
 			if not line.type == type:
@@ -544,7 +545,7 @@ class GffExons(object):
 		#   if line.strand == '-':
 		#	   positions += list(reversed(line.positions))
 		#   else:
-			positions += line.positions
+			positions += line.positions	# reverse if strand == '-'
 		return positions
 
 	def to_gff_record(self):
@@ -1350,12 +1351,17 @@ class GffRecord(nx.DiGraph):
 		seq = d_seqs[self.chrom]
 		for RNARecord in GffRNARecords(self):
 			cds = RNARecord.features['CDS']
-			exons = RNARecord.to_exons()	# sorted
+			reverse = 1 if RNARecord.strand == '-' else 0
+			cds = sorted(cds, key=lambda x:x.start, reverse=reverse)
+			exons = GffExons(cds)
+		#	exons = RNARecord.to_exons()	# sorted
 			cds_seq = exons.extract_seq(seq, 'CDS')
 			cds_pos =  exons.to_positions('CDS')
 			#if RNARecord.id == 'Acyan01G0001200.1':
 			#   print >>sys.stderr, cds_pos, cds_seq, str(Seq(cds_seq).translate())
 			assert len(cds_seq) == len(cds_pos)
+			if len(cds_seq) % 3 != 0:
+				print >> sys.stderr, '[WARN] CDS of {} is not Multiple of 3'.format(RNARecord.id)
 			for i in range(0, len(cds_pos), 3):
 				codon = cds_seq[i:i+3]
 				cod_pos = cds_pos[i:i+3]
