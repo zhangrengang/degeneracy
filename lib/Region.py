@@ -71,6 +71,19 @@ class Regions():	# parser
 			intron_regions += [Region(chrom=exon_region.chrom, start=last_end+1, end=exon_region.start-1) ]
 			last_end = exon_region.end
 		return intron_regions
+	@classmethod
+	def get_splicing(cls, exon_regions, span=2):
+		splicing_regions = []
+		exon_regions = sorted(exon_regions, key=lambda x:x.start)
+		for i, exon_region in enumerate(exon_regions):
+			if  i < len(exon_regions) - 1:	# end
+				splicing_regions += [Region(chrom=exon_region.chrom, 
+						start=exon_region.end-span, end=exon_region.end+span)]
+			if i > 0:	# start
+				splicing_regions += [Region(chrom=exon_region.chrom,
+                        start=exon_region.start-span, end=exon_region.start+span)]
+		return splicing_regions	# regions
+
 class Position():
 	def __init__(self, chrom=None, pos=None):
 		self.chrom = chrom
