@@ -1479,7 +1479,10 @@ class GffRecord(nx.DiGraph):
 			return d_positon
 		seq = d_seqs[self.chrom]
 		for RNARecord in GffRNARecords(self):
-			cds = RNARecord.features['CDS']
+			try: cds = RNARecord.features['CDS']
+			except KeyError:
+				print >> sys.stderr, 'RNA {} is non-coding in a coding gene'.format(RNARecord.id)
+				continue
 			reverse = 1 if RNARecord.strand == '-' else 0
 			cds = sorted(cds, key=lambda x:x.start, reverse=reverse)
 			exons = GffExons(cds)
