@@ -1494,7 +1494,8 @@ class GffRecord(nx.DiGraph):
 				print >> sys.stderr, '[WARN] CDS of {} is not Multiple of 3 with frame {}; discarded..'.format(RNARecord.id, frame)
 				continue
 			else:
-				assert frame == 0, '{}: frame ({}) of the first CDS region is not 0'.format(RNARecord.id, frame)
+				try: assert frame == 0, '[WARN] {}: frame ({}) of the first CDS region is not 0'.format(RNARecord.id, frame)
+				except AssertionError: pass
 			for i in range(frame, len(cds_pos), 3):
 				codon = cds_seq[i:i+3]
 				cod_pos = cds_pos[i:i+3]
