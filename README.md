@@ -14,3 +14,20 @@ cd degeneracy
 python2 get_degeneracy.py test/test.gff3 test/test.fa
 python2 get_degeneracy.py test/test.gff3 test/test.fa out_prefix
 ```
+
+### Output ###
+```
+out_prefix.codon1-fold0.pos
+out_prefix.codon2-fold0.pos
+out_prefix.codon3-fold4.pos
+```
+The postions are in 1-based coordinates.
+
+### Note ###
+1. It concatenates the multiple CDS regions of a transcript and then identify 0d/4d positions, 
+so the results include these positions in splicing sites, 
+but it is slower than the methods based on the one-by-one single CDS region which have to omit the splicing sites. 
+However, there are likely more evolutionary constraints in the splicing sites 
+and it may be better to exclude the splicing sites.
+
+2. It sorts the multiple CDS regions, so it is not suitable to trans-splicing genes.

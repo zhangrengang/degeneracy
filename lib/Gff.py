@@ -311,20 +311,23 @@ class GffGenes(object):
 	def _parse(self):
 		record = GffRecord(**self.kargs)
 		i = 0
-		ids = set([])
+		j = 0
+		ids = {} #set([])
 		has_gene = False
 		for line in self.parser(self.gff):
 			i += 1
+			j += 1
 			id, parent = line.id, line.parent
 #			if i < 10:
 #				print >> sys.stderr, line
 			if line.type == 'gene':
 				has_gene = True
 			if id in ids:	# duplicated ID of CDS and UTR
+				lasti = ids[id]
 				id = '{}.{}'.format(id, i)
-				if line.type == 'gene':	 # trans-splicing in RefSeq
+				if line.type == 'gene' and i - lasti < 10:	 # trans-splicing in RefSeq
 					continue
-			ids.add(id)
+			ids[id] = j #.add(id)
 			if (parent is None or line.type == 'gene' or (parent not in record and not has_gene) ) \
 					and len(record.nodes()) > 0:
 				yield record
@@ -334,6 +337,33 @@ class GffGenes(object):
 			else:
 				record.add_node(id, line=line, index=i)
 				if parent is not None and line.type != 'gene':	# gene: parent: gene_id
+					record.add_edge(parent, id)
+		if len(record.nodes()) > 0:
+			yield record
+class PasaGffGenes(GffGenes):
+	def __init__(self, gff, parser=GffLines):
+		self.gff = gff
+		self.parser = parser
+	def _parse(self):
+		record = GffRecord()
+		ids = {}
+		i, j = 0, 0
+		for line in self.parser(self.gff):
+			i += 1
+			j += 1
+			id, parent = line.id, line.parent
+			if id in ids:
+				id = '{}.{}'.format(id, i)
+			ids[id] = i
+			if line.type == 'gene' and len(record.nodes()) > 0:
+				yield record
+				record = GffRecord()
+				i = 1
+				ids = {}
+				record.add_node(id, line=line, index=i)
+			else:
+				record.add_node(id, line=line, index=i)
+				if line.type != 'gene':
 					record.add_edge(parent, id)
 		if len(record.nodes()) > 0:
 			yield record
