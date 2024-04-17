@@ -85,9 +85,10 @@ class Regions():	# parser
 		return splicing_regions	# regions
 
 class Position():
-	def __init__(self, chrom=None, pos=None):
+	def __init__(self, chrom=None, pos=None, id=None):
 		self.chrom = chrom
 		self.pos = pos if pos is None else int(pos)
+		self.id = id
 	def __add__(self, number):
 		return Position(chrom=self.chrom, pos=self.pos+number)
 	def __sub__(self, other):
@@ -123,9 +124,11 @@ class Position():
 	def __format__(self, spec=None):
 		if spec is None:
 			spec = '{chrom}\t{pos}'
+			if self.id:
+				spec += '\t{id}'
 		elif spec == "":  # format_spec defaults to ""
 			return str(self)
-		return spec.format(chrom=self.chrom, pos=self.pos)
+		return spec.format(chrom=self.chrom, pos=self.pos, id=self.id)
 	@property
 	def key(self):
 		return (self.chrom, self.pos)

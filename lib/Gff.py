@@ -1537,6 +1537,7 @@ class GffRecord(nx.DiGraph):
 					if postype is None:
 						continue
 					postype = 'codon{}-{}'.format(j+1, postype)
+					pos.id = RNARecord.id
 					try: d_positon[pos].add(postype)
 					except KeyError: d_positon[pos] = {postype}
 		return d_positon
